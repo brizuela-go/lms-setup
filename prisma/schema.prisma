@@ -1,0 +1,253 @@
+// This is your Prisma schema file for SaberPro LMS
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum for user roles
+enum UserRole {
+  STUDENT
+  TEACHER
+  ADMIN
+  SUPERADMIN
+}
+
+// Enum for question types
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  OPEN_TEXT
+}
+
+// Enum for submission status
+enum SubmissionStatus {
+  PENDING
+  SUBMITTED
+  GRADED
+}
+
+// Enum for enrollment status
+enum EnrollmentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Base User model
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Role-specific relations
+  student Student?
+  teacher Teacher?
+  admin   Admin?
+
+  // Common relations
+  notifications Notification[]
+}
+
+// Student model
+model Student {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  studentId   String   @unique // 6-digit ID for login
+  isActivated Boolean  @default(false) // Whether student has created password
+  joinedAt    DateTime @default(now())
+
+  // Relations
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollments Enrollment[]
+  submissions Submission[]
+  grades      Grade[]
+
+  @@index([studentId])
+}
+
+// Teacher model
+model Teacher {
+  id         String  @id @default(uuid())
+  userId     String  @unique
+  bio        String?
+  department String?
+
+  // Relations
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects  Subject[]
+  homeworks Homework[]
+  grades    Grade[] // Grades assigned by this teacher
+}
+
+// Admin model
+model Admin {
+  id           String  @id @default(uuid())
+  userId       String  @unique
+  isSuperAdmin Boolean @default(false)
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Subject model
+model Subject {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  code        String   @unique
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  teacher     Teacher      @relation(fields: [teacherId], references: [id])
+  teacherId   String
+  enrollments Enrollment[]
+  homeworks   Homework[]
+
+  @@index([code])
+}
+
+// Enrollment model (many-to-many relation between Students and Subjects)
+model Enrollment {
+  id         String           @id @default(uuid())
+  status     EnrollmentStatus @default(PENDING)
+  enrolledAt DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  // Relations
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectId String
+
+  @@unique([studentId, subjectId])
+}
+
+// Homework model
+model Homework {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?
+  dueDate         DateTime
+  totalPoints     Int
+  allowFileUpload Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  subject     Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectId   String
+  teacher     Teacher      @relation(fields: [teacherId], references: [id])
+  teacherId   String
+  questions   Question[]
+  submissions Submission[]
+
+  @@index([subjectId])
+}
+
+// Question model
+model Question {
+  id            String       @id @default(uuid())
+  order         Int // Position in homework
+  text          String
+  type          QuestionType
+  points        Int
+  options       Json? // For multiple choice: [{ "id": "a", "text": "Option A" }]
+  correctAnswer String? // For multiple choice & true/false
+
+  // Relations
+  homework   Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+  homeworkId String
+  answers    Answer[]
+
+  @@unique([homeworkId, order])
+}
+
+// Submission model
+model Submission {
+  id          String           @id @default(uuid())
+  status      SubmissionStatus @default(PENDING)
+  submittedAt DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  fileUrl     String? // URL to uploaded file if any
+
+  // Relations
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId  String
+  homework   Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+  homeworkId String
+  answers    Answer[]
+  grade      Grade?
+
+  @@unique([studentId, homeworkId])
+}
+
+// Answer model
+model Answer {
+  id           String  @id @default(uuid())
+  answerText   String? // For text answers
+  answerOption String? // For multiple choice & true/false
+
+  // Relations
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  submissionId String
+  question     Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId   String
+
+  @@unique([submissionId, questionId])
+}
+
+// Grade model
+model Grade {
+  id       String   @id @default(uuid())
+  score    Float
+  feedback String?
+  gradedAt DateTime @default(now())
+
+  // Relations
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId    String
+  teacher      Teacher    @relation(fields: [teacherId], references: [id])
+  teacherId    String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  submissionId String     @unique
+
+  @@index([studentId])
+}
+
+// Notification model
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@index([userId, isRead])
+}
+
+// File model for tracking uploaded files
+model File {
+  id         String   @id @default(uuid())
+  name       String
+  url        String
+  size       Int
+  mimeType   String
+  uploadedAt DateTime @default(now())
+  uploadedBy String // User ID of uploader
+}
