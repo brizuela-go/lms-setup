@@ -14,6 +14,7 @@ import {
   Menu,
   Bell,
 } from "lucide-react";
+import type { StudentUser } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -41,11 +42,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 interface StudentNavbarProps {
-  user?: {
-    name: string;
-    email: string;
-    image?: string;
-  };
+  user: StudentUser;
 }
 
 const mainNavItems = [
@@ -71,9 +68,7 @@ const mainNavItems = [
   },
 ];
 
-export function StudentNavbar({
-  user = { name: "Estudiante", email: "estudiante@saberpro.com" },
-}: StudentNavbarProps) {
+export function StudentNavbar({ user }: StudentNavbarProps) {
   const pathname = usePathname();
   const [notificationCount] = useState(3); // Ejemplo, se reemplazaría con datos reales
 
@@ -188,7 +183,7 @@ export function StudentNavbar({
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.image} alt={user.name} />
+                  <AvatarImage src={user.image || ""} alt={user.name} />
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               </Button>
@@ -235,7 +230,7 @@ export function StudentNavbar({
               <div className="flex flex-col py-6">
                 <div className="flex items-center px-4 py-2 mb-6">
                   <Avatar className="h-10 w-10 mr-3">
-                    <AvatarImage src={user.image} alt={user.name} />
+                    <AvatarImage src={user.image || ""} alt={user.name} />
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                   <div>

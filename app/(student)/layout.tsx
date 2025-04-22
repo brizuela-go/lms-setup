@@ -1,3 +1,4 @@
+// app/(student)/layout.tsx
 import { Suspense } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -5,6 +6,7 @@ import { Toaster } from "sonner";
 
 import { StudentNavbar } from "@/components/layout/student-navbar";
 import Footer from "@/components/layout/footer";
+import type { StudentUser } from "@/types";
 
 export default async function StudentLayout({
   children,
@@ -18,9 +20,12 @@ export default async function StudentLayout({
     redirect("/login");
   }
 
+  // Type assertion is safe after we've checked the role
+  const studentUser = session.user as StudentUser;
+
   return (
     <main className="dark min-h-svh flex flex-col">
-      <StudentNavbar user={session.user as any} />
+      <StudentNavbar user={studentUser as any} />
       <div className="flex-1">
         <Suspense
           fallback={<div className="p-10 text-center">Cargando...</div>}

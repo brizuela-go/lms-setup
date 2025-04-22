@@ -17,6 +17,7 @@ import {
   Bell,
   CircleUser,
 } from "lucide-react";
+import type { AdminUser } from "@/types";
 
 import {
   Sidebar,
@@ -35,12 +36,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 interface AdminSidebarProps {
-  user?: {
-    name: string;
-    email: string;
-    image?: string;
-    role?: string;
-  };
+  user: AdminUser;
   pendingNotifications?: number;
 }
 
@@ -54,7 +50,7 @@ interface SidebarItemProps {
 }
 
 export function AdminSidebar({
-  user = { name: "Administrador", email: "admin@saberpro.com", role: "ADMIN" },
+  user,
   pendingNotifications = 0,
 }: AdminSidebarProps) {
   const pathname = usePathname();
@@ -151,7 +147,7 @@ export function AdminSidebar({
           <SidebarGroupContent>
             <div className="flex items-center gap-3 px-4 py-2">
               <Avatar>
-                <AvatarImage src={user.image} />
+                <AvatarImage src={user.image || ""} />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="truncate">
@@ -180,7 +176,7 @@ export function AdminSidebar({
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
-                      {item.badge && (
+                      {item.badge !== undefined && item.badge > 0 && (
                         <SidebarBadge
                           count={item.badge}
                           variant={item.badgeVariant || "primary"}
@@ -210,7 +206,7 @@ export function AdminSidebar({
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
-                      {item.badge && (
+                      {item.badge !== undefined && item.badge > 0 && (
                         <SidebarBadge
                           count={item.badge}
                           variant={item.badgeVariant || "primary"}

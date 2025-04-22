@@ -16,6 +16,7 @@ import {
   ClipboardList,
   CircleUser,
 } from "lucide-react";
+import type { TeacherUser } from "@/types";
 
 import {
   Sidebar,
@@ -31,14 +32,9 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 
 interface TeacherSidebarProps {
-  user?: {
-    name: string;
-    email: string;
-    image?: string;
-  };
+  user: TeacherUser;
   pendingNotifications?: number;
   pendingSubmissions?: number;
   pendingEnrollments?: number;
@@ -54,7 +50,7 @@ interface SidebarItemProps {
 }
 
 export function TeacherSidebar({
-  user = { name: "Profesor", email: "profesor@saberpro.com" },
+  user,
   pendingNotifications = 3,
   pendingSubmissions = 5,
   pendingEnrollments = 2,
@@ -75,8 +71,8 @@ export function TeacherSidebar({
     {
       icon: Home,
       label: "Dashboard",
-      href: "/dashboard",
-      isActive: pathname === "/dashboard",
+      href: "/teacher",
+      isActive: pathname === "/teacher",
     },
     {
       icon: BookOpen,
@@ -150,7 +146,7 @@ export function TeacherSidebar({
           <SidebarGroupContent>
             <div className="flex items-center gap-3 px-4 py-2">
               <Avatar>
-                <AvatarImage src={user.image} />
+                <AvatarImage src={user.image || ""} />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="truncate">
@@ -179,7 +175,7 @@ export function TeacherSidebar({
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
-                      {item.badge && (
+                      {item.badge !== undefined && item.badge > 0 && (
                         <SidebarBadge
                           count={item.badge}
                           variant={item.badgeVariant || "primary"}
@@ -209,7 +205,7 @@ export function TeacherSidebar({
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
-                      {item.badge && (
+                      {item.badge !== undefined && item.badge > 0 && (
                         <SidebarBadge
                           count={item.badge}
                           variant={item.badgeVariant || "primary"}
