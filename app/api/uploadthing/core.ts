@@ -1,45 +1,58 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+import { auth } from "@/auth";
 
 const f = createUploadthing();
 
-const auth = (req: Request) => {
-  console.log(req);
-  return { id: "fakeId" };
-}; // Fake auth function
+// Middleware para verificar autenticación
+const middleware = async () => {
+  const session = await auth();
 
-// FileRouter for your app, can contain multiple FileRoutes
+  if (!session || !session.user) {
+    throw new UploadThingError("No autorizado");
+  }
+
+  // Return metadata para usar en onUploadComplete
+  return { userId: session.user.id };
+};
+
+// FileRouter para nuestra aplicación
 export const ourFileRouter = {
-  // Define as many FileRoutes as you like, each with a unique routeSlug
-  imageUploader: f({
-    image: {
-      /**
-       * For full list of options and defaults, see the File Route API reference
-       * @see https://docs.uploadthing.com/file-routes#route-config
-       */
-      maxFileSize: "4MB",
-      maxFileCount: 1,
-    },
-  })
-    // Set permissions and file types for this FileRoute
-    .middleware(async ({ req }) => {
-      // This code runs on your server before upload
-      const user = await auth(req);
-
-      // If you throw, the user will not be able to upload
-      if (!user) throw new UploadThingError("Unauthorized");
-
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id };
-    })
+  // Para imágenes (fotos de perfil, etc.)
+  imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
+    .middleware(middleware)
     .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
+      console.log("Imagen subida por:", metadata.userId);
+      console.log("URL del archivo:", file.url);
 
-      console.log("file url", file.ufsUrl);
+      return { uploadedBy: metadata.userId, url: file.url };
+    }),
 
-      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId };
+  // Para documentos (tareas, recursos, etc.)
+  documentUploader: f({
+    pdf: { maxFileSize: "16MB", maxFileCount: 1 },
+    image: { maxFileSize: "8MB", maxFileCount: 1 },
+    text: { maxFileSize: "2MB", maxFileCount: 1 },
+    audio: { maxFileSize: "8MB", maxFileCount: 1 },
+    video: { maxFileSize: "64MB", maxFileCount: 1 },
+  })
+    .middleware(middleware)
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("Documento subido por:", metadata.userId);
+      console.log("URL del archivo:", file.url);
+
+      // Aquí podríamos guardar el archivo en la base de datos
+      // await prisma.file.create({
+      //   data: {
+      //     name: file.name,
+      //     url: file.url,
+      //     size: file.size,
+      //     mimeType: file.type,
+      //     uploadedBy: metadata.userId,
+      //   },
+      // });
+
+      return { uploadedBy: metadata.userId, url: file.url };
     }),
 } satisfies FileRouter;
 
