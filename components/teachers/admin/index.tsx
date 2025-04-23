@@ -262,32 +262,6 @@ export default function TeachersClient({
               Crear Profesor
             </Button>
           </TeacherCreationDialog>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Filter className="mr-2 size-4" />
-                Opciones
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Upload className="mr-2 size-4" />
-                Importar profesores
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Download className="mr-2 size-4" />
-                Exportar datos
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={refreshData}>
-                <Loader2 className="mr-2 size-4" />
-                Actualizar datos
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 

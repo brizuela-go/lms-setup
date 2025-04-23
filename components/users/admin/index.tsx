@@ -339,56 +339,6 @@ export default function UsersClient({ initialUsers }: UsersClientProps) {
             Administra a todos los usuarios registrados en la plataforma
           </p>
         </div>
-
-        <div className="flex gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button>
-                <PlusCircle className="mr-2 size-4" />
-                Crear Usuario
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Selecciona un tipo</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/admin/students/new">
-                  <GraduationCap className="mr-2 size-4" />
-                  Crear Estudiante
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/teachers/new">
-                  <School className="mr-2 size-4" />
-                  Crear Profesor
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/users/new">
-                  <Shield className="mr-2 size-4" />
-                  Crear Administrador
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Filter className="mr-2 size-4" />
-                Opciones
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={refreshData}>
-                <Loader2 className="mr-2 size-4" />
-                Actualizar datos
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
       </div>
 
       <Card className="mb-6">
@@ -526,7 +476,6 @@ export default function UsersClient({ initialUsers }: UsersClientProps) {
                     <ArrowUpDown className="size-4" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -614,62 +563,6 @@ export default function UsersClient({ initialUsers }: UsersClientProps) {
                       {format(new Date(user.createdAt), "d MMM, yyyy", {
                         locale: es,
                       })}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="size-4" />
-                            <span className="sr-only">Opciones</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          {user.role === "STUDENT" && user.student && (
-                            <DropdownMenuItem asChild>
-                              <Link href={`/admin/students/${user.student.id}`}>
-                                <GraduationCap className="mr-2 size-4" />
-                                Ver perfil de estudiante
-                              </Link>
-                            </DropdownMenuItem>
-                          )}
-                          {user.role === "TEACHER" && user.teacher && (
-                            <DropdownMenuItem asChild>
-                              <Link href={`/admin/teachers/${user.teacher.id}`}>
-                                <School className="mr-2 size-4" />
-                                Ver perfil de profesor
-                              </Link>
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem asChild>
-                            <Link href={`/admin/users/${user.id}/edit`}>
-                              <Edit className="mr-2 size-4" />
-                              Editar usuario
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setResetPasswordDialogOpen(true);
-                            }}
-                          >
-                            <KeyRound className="mr-2 size-4" />
-                            Resetear contraseña
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setDeleteDialogOpen(true);
-                            }}
-                          >
-                            <Trash2 className="mr-2 size-4" />
-                            Eliminar
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))

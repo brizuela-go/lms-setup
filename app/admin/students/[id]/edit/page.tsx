@@ -15,6 +15,7 @@ import {
   User,
   BadgeCheck,
   BadgeX,
+  Trash,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -52,11 +53,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-} from "@/components/ui/breadcrumb";
+("@/components/ui/breadcrumb");
 
 interface Student {
   id: string;
@@ -193,6 +190,28 @@ export default function StudentEditPage({
     return password;
   }
 
+  const handleDeleteStudent = async () => {
+    if (!student) return;
+
+    try {
+      const response = await fetch(`/api/students?id=${student.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Error al eliminar estudiante");
+      }
+
+      toast.success("Estudiante eliminado correctamente");
+      router.push("/admin/students");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Error al eliminar estudiante"
+      );
+    }
+  };
+
   // Manejar reseteo de contraseña
   async function handleResetPassword() {
     try {
@@ -271,31 +290,6 @@ export default function StudentEditPage({
 
   return (
     <div className="container py-10">
-      <div className="mb-6">
-        <Breadcrumb>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={"/admin"}>Dashboard</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={"/admin/students"}>Estudiantes</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={`/admin/students/${student.id}`}>
-                #{student.id} - {student.user.name}
-              </Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink>Editar</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </div>
-
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" asChild>
@@ -480,7 +474,7 @@ export default function StudentEditPage({
               </div>
             </CardContent>
             <Separator />
-            <CardFooter className="flex flex-col gap-2 pt-6">
+            <CardFooter className="flex flex-col gap-4 pt-6">
               <AlertDialog
                 open={resetPasswordOpen}
                 onOpenChange={setResetPasswordOpen}
@@ -525,14 +519,12 @@ export default function StudentEditPage({
                       </p>
                     </div>
                   ) : (
-                    <>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleResetPassword}>
-                          Resetear Contraseña
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleResetPassword}>
+                        Resetear Contraseña
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
                   )}
                   {newPassword && (
                     <Button
@@ -542,6 +534,31 @@ export default function StudentEditPage({
                       Cerrar
                     </Button>
                   )}
+                </AlertDialogContent>
+              </AlertDialog>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" className="w-full gap-x-2">
+                    <Trash className="mr-2 size-4" />
+                    Eliminar Estudiante
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Eliminar estudiante?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta acción eliminará al estudiante {"  "}
+                      <strong>{student.user.name}</strong> de forma permanente.
+                      ¿Estás seguro de continuar?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteStudent}>
+                      Eliminar
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             </CardFooter>

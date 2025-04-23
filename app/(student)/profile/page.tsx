@@ -5,7 +5,6 @@ import { PrismaClient } from "@prisma/client";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import {
-  User,
   Mail,
   Calendar,
   GraduationCap,
@@ -13,7 +12,6 @@ import {
   FileText,
   Lock,
   UserCircle,
-  Edit,
   Camera,
   AlertCircle,
 } from "lucide-react";
@@ -180,13 +178,6 @@ export default async function ProfilePage() {
                       {initials}
                     </AvatarFallback>
                   </Avatar>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="absolute -bottom-2 -right-2 rounded-full h-8 w-8"
-                  >
-                    <Camera className="size-4" />
-                  </Button>
                 </div>
                 <h2 className="text-xl font-bold mb-1">
                   {studentProfile.user.name}
@@ -219,9 +210,7 @@ export default async function ProfilePage() {
                 <div className="w-full space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <Mail className="size-4 text-muted-foreground" />
-                    <span className="truncate flex-1">
-                      {studentProfile.user.email}
-                    </span>
+                    {studentProfile.user.email}
                   </div>
                   <div className="flex items-center gap-2">
                     <Calendar className="size-4 text-muted-foreground" />

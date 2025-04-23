@@ -207,24 +207,6 @@ export default async function SubjectDetailPage({
 
   return (
     <div className="container py-10">
-      <div className="mb-6">
-        <Breadcrumb>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/admin">Dashboard</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/admin/subjects">Materias</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink>{subject.name}</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </div>
-
       <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
         <div className="flex items-center gap-4">
           <Button

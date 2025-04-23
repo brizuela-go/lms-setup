@@ -155,7 +155,7 @@ export default async function AdminDashboard() {
         Bienvenid@ al panel de control administrativo de SaberPro
       </p>
 
-      <div className="grid gap-6 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 grid-cols-2 lg:grid-cols-3">
         <StatsCard
           title="Estudiantes"
           value={stats.counts.students}
@@ -176,16 +176,9 @@ export default async function AdminDashboard() {
           title="Materias Activas"
           value={stats.counts.activeSubjects}
           icon={<BookOpen className="size-5 text-orange-500" />}
+          trend="1 nueva este año"
           secondaryValue={`/${stats.counts.subjects} total`}
           href="/admin/subjects"
-        />
-
-        <StatsCard
-          title="Tareas"
-          value={stats.counts.homeworks}
-          icon={<FileText className="size-5 text-purple-500" />}
-          secondaryValue={`${stats.counts.pendingGrades} sin calificar`}
-          href="/admin/homeworks"
         />
       </div>
 
@@ -219,7 +212,7 @@ export default async function AdminDashboard() {
             </div>
 
             <div className="mt-6 flex justify-center">
-              <Button asChild>
+              <Button variant={"secondary"} asChild>
                 <Link href="/admin/users">
                   <Users className="mr-2 size-4" />
                   Ver todos los usuarios
@@ -370,7 +363,7 @@ export default async function AdminDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ">
               <AdminActionCard
                 title="Crear Estudiante"
                 description="Registra un nuevo estudiante en el sistema"
@@ -396,15 +389,6 @@ export default async function AdminDashboard() {
                 buttonIcon={<PlusCircle className="size-4 mr-2" />}
                 buttonText="Nueva Materia"
                 href="/admin/subjects"
-              />
-
-              <AdminActionCard
-                title="Ver Reportes"
-                description="Consulta estadísticas detalladas del sistema"
-                icon={<BarChart3 className="size-5" />}
-                buttonIcon={<BarChart3 className="size-4 mr-2" />}
-                buttonText="Ver Reportes"
-                href="/admin/reports"
               />
             </div>
           </CardContent>
@@ -480,7 +464,7 @@ export default async function AdminDashboard() {
                 )}
               </CardContent>
               <CardFooter>
-                <Button asChild className="w-full">
+                <Button asChild variant="secondary" className="w-full">
                   <Link href="/admin/students">Ver todos los estudiantes</Link>
                 </Button>
               </CardFooter>
@@ -508,7 +492,7 @@ export default async function AdminDashboard() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button asChild className="w-full">
+                <Button asChild variant="secondary" className="w-full">
                   <Link href="/admin/subjects">Ver todas las materias</Link>
                 </Button>
               </CardFooter>
@@ -600,7 +584,7 @@ function AdminActionCard({
         </div>
       </div>
 
-      <Button asChild className="w-full">
+      <Button asChild variant="secondary" className="w-full">
         <Link href={href}>
           {buttonIcon}
           {buttonText}

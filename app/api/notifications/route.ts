@@ -1,79 +1,72 @@
+// app/api/notifications/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/prisma";
 
-const prisma = new PrismaClient();
-
-// GET: Fetch all notifications for the current user
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    // Check authentication
     const session = await auth();
 
-    if (!session) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user's notifications
+    const userId = session.user.id;
+
+    // Get notifications for the current user
     const notifications = await prisma.notification.findMany({
       where: {
-        userId: session.user.id,
+        userId: userId,
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    return NextResponse.json({ notifications }, { status: 200 });
+    return NextResponse.json({ notifications });
   } catch (error) {
-    console.error("Error fetching notifications:", error);
+    console.error("Failed to get notifications:", error);
     return NextResponse.json(
-      { error: "Error al obtener notificaciones" },
+      { error: "Failed to get notifications" },
       { status: 500 }
     );
   }
 }
 
-// POST: Create a new notification
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    // Check authentication - only admins and teachers can create notifications
     const session = await auth();
 
     if (
       !session ||
-      (session.user.role !== "ADMIN" &&
-        session.user.role !== "SUPERADMIN" &&
-        session.user.role !== "TEACHER")
+      (session.user.role !== "ADMIN" && session.user.role !== "SUPERADMIN")
     ) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get and validate request body
-    const body = await request.json();
+    const { title, message, userId, category } = await req.json();
 
-    if (!body.title || !body.message || !body.userId) {
+    if (!title || !message || !userId) {
       return NextResponse.json(
-        { error: "Faltan campos requeridos" },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    // Create notification
     const notification = await prisma.notification.create({
       data: {
-        title: body.title,
-        message: body.message,
-        userId: body.userId,
+        title,
+        message,
+        userId,
         isRead: false,
       },
     });
 
     return NextResponse.json({ notification }, { status: 201 });
   } catch (error) {
-    console.error("Error creating notification:", error);
+    console.error("Failed to create notification:", error);
     return NextResponse.json(
-      { error: "Error al crear notificación" },
+      { error: "Failed to create notification" },
       { status: 500 }
     );
   }

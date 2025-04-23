@@ -1,23 +1,22 @@
+// app/api/notifications/readAll/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/prisma";
 
-const prisma = new PrismaClient();
-
-// PUT: Mark all notifications as read for the current user
-export async function PUT(request: NextRequest) {
+export async function PUT(req: NextRequest) {
   try {
-    // Check authentication
     const session = await auth();
 
-    if (!session) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Update all unread notifications for the current user
-    const result = await prisma.notification.updateMany({
+    const userId = session.user.id;
+
+    // Mark all notifications for this user as read
+    await prisma.notification.updateMany({
       where: {
-        userId: session.user.id,
+        userId: userId,
         isRead: false,
       },
       data: {
@@ -25,18 +24,11 @@ export async function PUT(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
-      {
-        success: true,
-        count: result.count,
-        message: `${result.count} notificaciones marcadas como leídas`,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error marking all notifications as read:", error);
+    console.error("Failed to mark all notifications as read:", error);
     return NextResponse.json(
-      { error: "Error al marcar todas las notificaciones como leídas" },
+      { error: "Failed to mark all notifications as read" },
       { status: 500 }
     );
   }

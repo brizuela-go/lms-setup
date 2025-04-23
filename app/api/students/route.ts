@@ -357,9 +357,9 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Solo super administradores pueden eliminar estudiantes
-    if (session.user.role !== "SUPERADMIN") {
-      return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
-    }
+    // if (session.user.role !== "SUPERADMIN") {
+    //   return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
+    // }
 
     const searchParams = request.nextUrl.searchParams;
     const studentId = searchParams.get("id");

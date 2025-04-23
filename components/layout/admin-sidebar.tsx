@@ -1,7 +1,6 @@
-// components/layout/admin-sidebar.tsx
-
 "use client";
 
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
@@ -11,7 +10,6 @@ import {
   BookOpen,
   GraduationCap,
   Users,
-  UserCog,
   Settings,
   LogOut,
   School,
@@ -36,10 +34,10 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { notificationService } from "@/services/notifications/service";
 
 interface AdminSidebarProps {
   user: AdminUser;
-  pendingNotifications?: number;
 }
 
 interface SidebarItemProps {
@@ -51,11 +49,24 @@ interface SidebarItemProps {
   badgeVariant?: "primary" | "secondary" | "destructive";
 }
 
-export function AdminSidebar({
-  user,
-  pendingNotifications = 0,
-}: AdminSidebarProps) {
+export function AdminSidebar({ user }: AdminSidebarProps) {
   const pathname = usePathname();
+  const [pendingNotifications, setPendingNotifications] = useState<number>(0);
+
+  // Fetch notification count on component mount
+  useEffect(() => {
+    const fetchNotificationCount = async () => {
+      try {
+        const notifications = await notificationService.getNotifications();
+        const unreadCount = notifications.filter((n) => !n.isRead).length;
+        setPendingNotifications(unreadCount);
+      } catch (error) {
+        console.error("Failed to fetch notification count:", error);
+      }
+    };
+
+    fetchNotificationCount();
+  }, []);
 
   // Generar iniciales para el avatar
   const initials =
@@ -100,36 +111,36 @@ export function AdminSidebar({
       href: "/admin/subjects",
       isActive: pathname.startsWith("/admin/subjects"),
     },
-    {
-      icon: BarChart,
-      label: "Reportes",
-      href: "/admin/reports",
-      isActive: pathname.startsWith("/admin/reports"),
-    },
+    // {
+    //   icon: BarChart,
+    //   label: "Reportes",
+    //   href: "/admin/reports",
+    //   isActive: pathname.startsWith("/admin/reports"),
+    // },
   ];
 
-  const secondaryItems: SidebarItemProps[] = [
-    {
-      icon: Bell,
-      label: "Notificaciones",
-      href: "/admin/notifications",
-      isActive: pathname.startsWith("/admin/notifications"),
-      badge: pendingNotifications,
-      badgeVariant: "secondary",
-    },
-    {
-      icon: CircleUser,
-      label: "Mi Perfil",
-      href: "/admin/profile",
-      isActive: pathname.startsWith("/admin/profile"),
-    },
-    {
-      icon: Settings,
-      label: "Configuración",
-      href: "/admin/settings",
-      isActive: pathname.startsWith("/admin/settings"),
-    },
-  ];
+  // const secondaryItems: SidebarItemProps[] = [
+  //   // {
+  //   //   icon: Bell,
+  //   //   label: "Notificaciones",
+  //   //   href: "/admin/notifications",
+  //   //   isActive: pathname.startsWith("/admin/notifications"),
+  //   //   badge: pendingNotifications,
+  //   //   badgeVariant: "secondary",
+  //   // },
+  //   {
+  //     icon: CircleUser,
+  //     label: "Mi Perfil",
+  //     href: "/admin/profile",
+  //     isActive: pathname.startsWith("/admin/profile"),
+  //   },
+  //   {
+  //     icon: Settings,
+  //     label: "Configuración",
+  //     href: "/admin/settings",
+  //     isActive: pathname.startsWith("/admin/settings"),
+  //   },
+  // ];
 
   return (
     <Sidebar side="left" variant="sidebar">
@@ -194,7 +205,7 @@ export function AdminSidebar({
 
         <SidebarSeparator />
 
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel>Cuenta</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -220,21 +231,21 @@ export function AdminSidebar({
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
       </SidebarContent>
 
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              asChild
               tooltip="Cerrar Sesión"
               variant="outline"
+              className="cursor-pointer"
+              onClick={() => signOut({ callbackUrl: "/login" })}
             >
-              <button onClick={() => signOut({ callbackUrl: "/login" })}>
-                <LogOut />
-                <span>Cerrar Sesión</span>
-              </button>
+              <LogOut />
+
+              <span>Cerrar Sesión</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

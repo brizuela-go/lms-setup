@@ -280,32 +280,6 @@ export default function StudentsClient({
 
         <div className="flex gap-2">
           <StudentCreationDialog onSuccess={refreshData} />
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Filter className="mr-2 size-4" />
-                Opciones
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Upload className="mr-2 size-4" />
-                Importar estudiantes
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Download className="mr-2 size-4" />
-                Exportar datos
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={refreshData}>
-                <Loader2 className="mr-2 size-4" />
-                Actualizar datos
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
@@ -516,16 +490,18 @@ export default function StudentsClient({
                     <TableCell>{student.user.email}</TableCell>
                     <TableCell>
                       {student.isActivated ? (
-                        <Badge variant="default">Activado</Badge>
+                        <Badge variant={"outline"}>Activado</Badge>
                       ) : (
                         <Badge variant="secondary">Pendiente</Badge>
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge>{student.enrollments.length}</Badge>
+                      <Badge variant={"outline"}>
+                        {student.enrollments?.length}
+                      </Badge>
                     </TableCell>
                     <TableCell>
-                      {format(new Date(student.joinedAt), "d MMM, yyyy", {
+                      {format(new Date(student?.joinedAt), "d MMM, yyyy", {
                         locale: es,
                       })}
                     </TableCell>

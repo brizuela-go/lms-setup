@@ -39,81 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-} from "@/components/ui/breadcrumb";
-
-interface Student {
-  id: string;
-  userId: string;
-  studentId: string;
-  isActivated: boolean;
-  joinedAt: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    image: string | null;
-    createdAt: string;
-  };
-  enrollments: Array<{
-    id: string;
-    status: string;
-    enrolledAt: string;
-    subject: {
-      id: string;
-      name: string;
-      code: string;
-      teacherId: string;
-      teacher: {
-        user: {
-          name: string;
-        };
-      };
-    };
-  }>;
-  submissions: Array<{
-    id: string;
-    status: string;
-    submittedAt: string;
-    homework: {
-      id: string;
-      title: string;
-      subject: {
-        id: string;
-        name: string;
-        code: string;
-      };
-    };
-    grade: {
-      id: string;
-      score: number;
-      gradedAt: string;
-    } | null;
-  }>;
-  grades: Array<{
-    id: string;
-    score: number;
-    gradedAt: string;
-    teacher: {
-      user: {
-        name: string;
-      };
-    };
-    submission: {
-      homework: {
-        title: string;
-        subject: {
-          name: string;
-        };
-      };
-    };
-  }>;
-}
-
-const prisma = new PrismaClient();
+import prisma from "@/prisma";
 
 async function getStudent(id: string) {
   try {
@@ -210,24 +136,6 @@ export default async function StudentDetailPage({
 
   return (
     <div className="container py-10">
-      <div className="mb-6">
-        <Breadcrumb>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={"/admin/students"}>Dashboard</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={"/admin/students"}>Estudiantes</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink>{student.user.name}</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </div>
-
       <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
         <div className="flex items-center gap-4">
           <Button
@@ -249,19 +157,6 @@ export default async function StudentDetailPage({
               <Badge variant="outline">{student.studentId}</Badge>
             </div>
           </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-          <Button variant="outline" asChild>
-            <Link href={`/admin/students/${student.id}/edit`}>
-              <Edit className="mr-2 size-4" />
-              Editar
-            </Link>
-          </Button>
-          <Button variant="destructive">
-            <Trash2 className="mr-2 size-4" />
-            Eliminar
-          </Button>
         </div>
       </div>
 
@@ -349,10 +244,6 @@ export default async function StudentDetailPage({
               </div>
             </CardContent>
             <CardFooter className="border-t pt-4 flex flex-col gap-2">
-              <Button className="w-full" variant="outline">
-                <KeyRound className="mr-2 size-4" />
-                Resetear Contraseña
-              </Button>
               <Button className="w-full" asChild>
                 <Link href={`/admin/students/${student.id}/edit`}>
                   <Edit className="mr-2 size-4" />
