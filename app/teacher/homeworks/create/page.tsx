@@ -14,7 +14,7 @@ async function getTeacherSubjects(userId: string) {
     });
 
     if (!teacher) {
-      return [];
+      return { subjects: [], teacherId: null };
     }
 
     // Obtener asignaturas del profesor

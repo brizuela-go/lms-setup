@@ -1,3 +1,5 @@
+// app/admin/page.tsx
+
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { PrismaClient } from "@prisma/client";
@@ -150,7 +152,7 @@ export default async function AdminDashboard() {
     <div className="container py-10">
       <h1 className="text-3xl font-bold mb-2">Dashboard de Administración</h1>
       <p className="text-muted-foreground mb-8">
-        Bienvenido al panel de control administrativo de SaberPro
+        Bienvenid@ al panel de control administrativo de SaberPro
       </p>
 
       <div className="grid gap-6 grid-cols-2 lg:grid-cols-4">

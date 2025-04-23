@@ -1,9 +1,7 @@
 // app/(student)/layout.tsx
-import { Suspense } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Toaster } from "sonner";
-
 import { StudentNavbar } from "@/components/layout/student-navbar";
 import Footer from "@/components/layout/footer";
 import type { StudentUser } from "@/types";
@@ -24,15 +22,9 @@ export default async function StudentLayout({
   const studentUser = session.user as StudentUser;
 
   return (
-    <main className="dark min-h-svh flex flex-col">
+    <main className="dark min-h-svh flex flex-col mx-14">
       <StudentNavbar user={studentUser as any} />
-      <div className="flex-1">
-        <Suspense
-          fallback={<div className="p-10 text-center">Cargando...</div>}
-        >
-          {children}
-        </Suspense>
-      </div>
+      <div className="flex-1 justify-center">{children}</div>
       <Footer />
       <Toaster richColors position="top-right" />
     </main>

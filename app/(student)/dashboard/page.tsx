@@ -144,9 +144,9 @@ export default async function StudentDashboard() {
       : 0;
 
   return (
-    <div className="container py-10">
+    <div className="py-10">
       <h1 className="text-3xl font-bold mb-2">
-        ¡Bienvenido, {session.user.name}!
+        ¡Bienvenid@, {session.user.name}!
       </h1>
       <p className="text-muted-foreground mb-8">
         Aquí está un resumen de tu actividad académica

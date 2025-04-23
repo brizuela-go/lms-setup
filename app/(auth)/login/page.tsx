@@ -20,7 +20,7 @@ export default function LoginPage() {
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-sm">
             <div className="flex flex-col gap-4 text-center">
-              <h1 className="text-2xl font-bold">Bienvenido a SaberPro</h1>
+              <h1 className="text-2xl font-bold">Bienvenid@ a SaberPro</h1>
               <p className="text-muted-foreground text-sm text-balance">
                 La nueva forma de aprender. Inicia sesión para continuar.
               </p>

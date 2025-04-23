@@ -203,7 +203,7 @@ export default async function TeacherDashboard() {
   return (
     <div className="container py-10">
       <h1 className="text-3xl font-bold mb-2">
-        ¡Bienvenido, Profesor {session.user.name.split(" ")[0]}!
+        ¡Bienvenid@, Profesor(a) {session.user.name.split(" ")[0]}!
       </h1>
       <p className="text-muted-foreground mb-8">
         Panel de control para administrar tus cursos y estudiantes

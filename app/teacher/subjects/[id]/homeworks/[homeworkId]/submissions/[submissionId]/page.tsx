@@ -99,7 +99,10 @@ export default async function GradeSubmissionPage({
         </p>
       </div>
 
-      <GradeSubmissionForm submission={submission} teacherId={teacher.id} />
+      <GradeSubmissionForm
+        submission={submission as any}
+        teacherId={teacher.id}
+      />
     </div>
   );
 }

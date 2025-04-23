@@ -1,7 +1,6 @@
 // auth.ts
 import NextAuth, { User, type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "./prisma"; // Using centralized Prisma client
 import { saltAndHashPassword, verifyPassword } from "./utils/password";
 import { z } from "zod";

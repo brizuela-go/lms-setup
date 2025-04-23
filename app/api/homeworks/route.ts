@@ -139,7 +139,9 @@ export async function POST(request: NextRequest) {
             text: question.text,
             type: question.type,
             points: question.points,
-            options: question.options ? JSON.stringify(question.options) : null,
+            options: (question.options as any)
+              ? (JSON.stringify(question.options) as any)
+              : null,
             correctAnswer: question.correctAnswer,
           },
         });
@@ -291,6 +293,7 @@ export async function GET(request: NextRequest) {
                   select: {
                     name: true,
                     email: true,
+                    id: true,
                   },
                 },
               },
@@ -309,7 +312,7 @@ export async function GET(request: NextRequest) {
       homeworks.forEach((homework) => {
         // Si la fecha de entrega no ha pasado y no hay envío, ocultar respuestas correctas
         const hasSubmitted = homework.submissions.some(
-          (s) => s.student.userId === session.user.id
+          (s) => s.student.user.id === session.user.id
         );
 
         if (!hasSubmitted && new Date(homework.dueDate) > new Date()) {

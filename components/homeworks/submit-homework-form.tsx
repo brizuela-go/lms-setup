@@ -246,19 +246,20 @@ export function SubmitHomeworkForm({
                             defaultValue={field.value}
                             className="space-y-2"
                           >
-                            {question.options.map((option) => (
-                              <FormItem
-                                key={option.id}
-                                className="flex items-start space-x-3 space-y-0"
-                              >
-                                <FormControl>
-                                  <RadioGroupItem value={option.id} />
-                                </FormControl>
-                                <FormLabel className="font-normal mt-0.5">
-                                  {option.text}
-                                </FormLabel>
-                              </FormItem>
-                            ))}
+                            {question.options &&
+                              question?.options.map((option) => (
+                                <FormItem
+                                  key={option.id}
+                                  className="flex items-start space-x-3 space-y-0"
+                                >
+                                  <FormControl>
+                                    <RadioGroupItem value={option.id} />
+                                  </FormControl>
+                                  <FormLabel className="font-normal mt-0.5">
+                                    {option.text}
+                                  </FormLabel>
+                                </FormItem>
+                              ))}
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />

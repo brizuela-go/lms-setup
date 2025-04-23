@@ -124,7 +124,7 @@ async function getSubjectData(subjectId: string, userId: string) {
     // Calcular calificaciones
     const grades = homeworksWithStatus
       .filter((hw) => hw.status === "graded")
-      .map((hw) => hw.submission.grade.score);
+      .map((hw) => hw.submission!.grade!.score);
 
     const averageGrade = grades.length
       ? grades.reduce((acc, grade) => acc + grade, 0) / grades.length
@@ -172,12 +172,14 @@ export default async function SubjectDetailPage({
   const { subject, homeworks, stats } = data;
 
   // Generar iniciales del profesor para el Avatar
-  const teacherInitials = subject.teacher.user.name
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  const teacherInitials =
+    subject.teacher.user.name &&
+    subject.teacher.user.name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
 
   return (
     <div className="container py-10">
@@ -347,8 +349,8 @@ export default async function SubjectDetailPage({
               <div className="flex flex-col items-center text-center gap-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
-                    src={subject.teacher.user.image}
-                    alt={subject.teacher.user.name}
+                    src={subject.teacher.user.image || ""}
+                    alt={subject.teacher.user.name || ""}
                   />
                   <AvatarFallback className="text-lg">
                     {teacherInitials}
@@ -475,7 +477,7 @@ export default async function SubjectDetailPage({
                       </span>
 
                       {homework.status === "graded" &&
-                        homework.submission.grade && (
+                        homework.submission?.grade && (
                           <span className="ml-4 flex items-center">
                             <GraduationCap className="size-3.5 mr-1" />
                             Calificación: {homework.submission.grade.score}

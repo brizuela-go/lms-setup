@@ -44,10 +44,12 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface StudentCreationDialogProps {
   children?: React.ReactNode;
+  onSuccess?: () => void;
 }
 
 export function StudentCreationDialog({
   children,
+  onSuccess,
 }: StudentCreationDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -61,7 +63,7 @@ export function StudentCreationDialog({
 
   // Configurar el formulario
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema as any),
     defaultValues: {
       name: "",
       email: "",
@@ -140,6 +142,11 @@ export function StudentCreationDialog({
 
       // Refrescar la página
       router.refresh();
+
+      // Ejecutar callback de éxito si se proporcionó
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error("Error al crear estudiante:", error);
       toast.error(

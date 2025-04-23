@@ -1,3 +1,5 @@
+// components/layout/admin-sidebar.tsx
+
 "use client";
 
 import { usePathname } from "next/navigation";

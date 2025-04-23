@@ -85,11 +85,13 @@ interface SubjectCreationDialogProps {
       image?: string | null;
     };
   }[];
+  onSuccess?: () => void;
 }
 
 export function SubjectCreationDialog({
   children,
   teachers,
+  onSuccess,
 }: SubjectCreationDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -165,6 +167,11 @@ export function SubjectCreationDialog({
 
       // Refrescar la página
       router.refresh();
+
+      // Ejecutar callback de éxito si se proporcionó
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error("Error al crear materia:", error);
       toast.error(

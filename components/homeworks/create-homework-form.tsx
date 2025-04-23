@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
 import {
@@ -14,7 +14,6 @@ import {
   GripVertical,
   CheckCircle2,
   XCircle,
-  FileText,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -37,7 +36,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -55,7 +53,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { es } from "date-fns/locale";
 
-// Definir formulario para la creación de tareas
+// Define form schema with correct types
 const formSchema = z.object({
   title: z
     .string()
@@ -92,7 +90,7 @@ const formSchema = z.object({
     .min(1, "Agrega al menos una pregunta"),
 });
 
-// Tipo de datos para el formulario
+// Define type for form values based on the schema
 type FormValues = z.infer<typeof formSchema>;
 
 interface CreateHomeworkFormProps {
@@ -111,14 +109,14 @@ export function CreateHomeworkForm({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Configurar el formulario
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  // Setup form with explicit typing
+  const form = useForm<any>({
+    resolver: zodResolver(formSchema as any),
     defaultValues: {
       title: "",
       description: "",
       subjectId: "",
-      dueDate: undefined,
+      dueDate: undefined as unknown as Date, // This will be set by the user
       dueTime: "23:59",
       allowFileUpload: false,
       questions: [
@@ -131,9 +129,9 @@ export function CreateHomeworkForm({
         },
       ],
     },
-  });
+  }) as any;
 
-  // Configurar el array de preguntas
+  // Setup questions field array with correct typing
   const {
     fields: questionFields,
     append: appendQuestion,
@@ -144,17 +142,17 @@ export function CreateHomeworkForm({
     name: "questions",
   });
 
-  // Manejar el envío del formulario
-  async function onSubmit(values: FormValues) {
+  // Submit handler with correct typing
+  const onSubmit: SubmitHandler<FormValues> = async (values) => {
     setIsSubmitting(true);
 
     try {
-      // Combinar fecha y hora
+      // Combine date and time
       const dueDate = new Date(values.dueDate);
       const [hours, minutes] = values.dueTime.split(":").map(Number);
       dueDate.setHours(hours, minutes);
 
-      // Preparar datos para el envío
+      // Prepare data for submission
       const homeworkData = {
         title: values.title,
         description: values.description || null,
@@ -175,7 +173,7 @@ export function CreateHomeworkForm({
         })),
       };
 
-      // Enviar datos al servidor
+      // Send data to server
       const response = await fetch("/api/homeworks", {
         method: "POST",
         headers: {
@@ -190,10 +188,10 @@ export function CreateHomeworkForm({
 
       const data = await response.json();
 
-      // Mostrar mensaje de éxito
+      // Show success message
       toast.success("¡Tarea creada correctamente!");
 
-      // Redireccionar a la página de la tarea
+      // Redirect to homework page
       router.push(
         `/teacher/subjects/${values.subjectId}/homeworks/${data.homework.id}`
       );
@@ -206,9 +204,9 @@ export function CreateHomeworkForm({
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
-  // Manejar la adición de opciones para preguntas de opción múltiple
+  // Helper function to add options for multiple choice questions
   const addOption = (questionIndex: number) => {
     const currentOptions =
       form.getValues(`questions.${questionIndex}.options`) || [];
@@ -218,24 +216,26 @@ export function CreateHomeworkForm({
     ]);
   };
 
-  // Manejar la eliminación de opciones
+  // Helper function to remove options
   const removeOption = (questionIndex: number, optionIndex: number) => {
     const currentOptions =
       form.getValues(`questions.${questionIndex}.options`) || [];
-    const updatedOptions = currentOptions.filter((_, i) => i !== optionIndex);
+    const updatedOptions = currentOptions.filter(
+      (_: any, i: number) => i !== optionIndex
+    );
     form.setValue(`questions.${questionIndex}.options`, updatedOptions);
   };
 
-  // Configurar el array de opciones para cada pregunta
+  // Watch question types for conditional rendering
+  const watchQuestionTypes = form.watch("questions");
+
+  // Helper function to get options field array with proper typing
   const getOptionsFieldArray = (questionIndex: number) => {
     return useFieldArray({
       control: form.control,
-      name: `questions.${questionIndex}.options`,
+      name: `questions.${questionIndex}.options` as const,
     });
   };
-
-  // Controlar visibilidad de campos según el tipo de pregunta
-  const watchQuestionTypes = form.watch("questions");
 
   return (
     <Form {...form}>
@@ -474,7 +474,7 @@ export function CreateHomeworkForm({
                               onValueChange={(value) => {
                                 field.onChange(value);
 
-                                // Resetear opciones si se cambia el tipo
+                                // Reset options if type changes
                                 if (value === "MULTIPLE_CHOICE") {
                                   form.setValue(
                                     `questions.${questionIndex}.options`,
@@ -548,7 +548,7 @@ export function CreateHomeworkForm({
                       />
                     </div>
 
-                    {/* Opciones para opción múltiple */}
+                    {/* Options for multiple choice */}
                     {questionType === "MULTIPLE_CHOICE" && (
                       <div className="space-y-4 pl-4 border-l-2 border-muted">
                         <div className="flex justify-between items-center">
@@ -631,7 +631,7 @@ export function CreateHomeworkForm({
                       </div>
                     )}
 
-                    {/* Opciones para verdadero/falso */}
+                    {/* Options for true/false */}
                     {questionType === "TRUE_FALSE" && (
                       <div className="space-y-4 pl-4 border-l-2 border-muted">
                         <h4 className="text-sm font-medium">
@@ -687,7 +687,7 @@ export function CreateHomeworkForm({
                       </div>
                     )}
 
-                    {/* Para texto abierto no necesitamos opciones adicionales */}
+                    {/* For open text, no additional options needed */}
                     {questionType === "OPEN_TEXT" && (
                       <div className="space-y-2 pl-4 border-l-2 border-muted">
                         <h4 className="text-sm font-medium">

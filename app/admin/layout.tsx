@@ -1,5 +1,4 @@
 // app/admin/layout.tsx
-import { Suspense } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Toaster } from "sonner";
@@ -41,13 +40,7 @@ export default async function AdminLayout({
                 <div className="md:pl-6">
                   {" "}
                   {/* Added padding for better spacing */}
-                  <Suspense
-                    fallback={
-                      <div className="p-10 text-center">Cargando...</div>
-                    }
-                  >
-                    {children}
-                  </Suspense>
+                  {children}
                 </div>
               </main>
               <Footer />

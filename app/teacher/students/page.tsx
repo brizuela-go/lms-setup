@@ -2,19 +2,15 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+
 import {
   Users,
   Search,
-  Filter,
   Mail,
   GraduationCap,
   BookOpen,
-  ArrowUpDown,
   MoreHorizontal,
   UserPlus,
-  AlertCircle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -34,13 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -51,6 +41,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Key,
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+} from "react";
 
 const prisma = new PrismaClient();
 
@@ -284,7 +281,7 @@ export default async function TeacherStudentsPage() {
                         <AvatarFallback>
                           {student.user.name
                             .split(" ")
-                            .map((n) => n[0])
+                            .map((n: any[]) => n[0])
                             .join("")
                             .toUpperCase()}
                         </AvatarFallback>
@@ -302,24 +299,57 @@ export default async function TeacherStudentsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
-                      {student.subjects.map((subject, index) =>
-                        index < 2 ? (
-                          <Badge
-                            key={subject.id}
-                            variant="secondary"
-                            className="whitespace-nowrap"
-                          >
-                            {subject.name}
-                          </Badge>
-                        ) : index === 2 ? (
-                          <Badge
-                            key="more"
-                            variant="outline"
-                            className="whitespace-nowrap"
-                          >
-                            +{student.subjects.length - 2} más
-                          </Badge>
-                        ) : null
+                      {student.subjects.map(
+                        (
+                          subject: {
+                            id: Key | null | undefined;
+                            name:
+                              | string
+                              | number
+                              | bigint
+                              | boolean
+                              | ReactElement<
+                                  unknown,
+                                  string | JSXElementConstructor<any>
+                                >
+                              | Iterable<ReactNode>
+                              | ReactPortal
+                              | Promise<
+                                  | string
+                                  | number
+                                  | bigint
+                                  | boolean
+                                  | ReactPortal
+                                  | ReactElement<
+                                      unknown,
+                                      string | JSXElementConstructor<any>
+                                    >
+                                  | Iterable<ReactNode>
+                                  | null
+                                  | undefined
+                                >
+                              | null
+                              | undefined;
+                          },
+                          index: number
+                        ) =>
+                          index < 2 ? (
+                            <Badge
+                              key={subject.id}
+                              variant="secondary"
+                              className="whitespace-nowrap"
+                            >
+                              {subject.name}
+                            </Badge>
+                          ) : index === 2 ? (
+                            <Badge
+                              key="more"
+                              variant="outline"
+                              className="whitespace-nowrap"
+                            >
+                              +{student.subjects.length - 2} más
+                            </Badge>
+                          ) : null
                       )}
                     </div>
                   </TableCell>

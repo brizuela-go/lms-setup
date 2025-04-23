@@ -1,13 +1,24 @@
 // app/page.tsx
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 
-export default async function HomePage() {
+export default async function Page() {
   const session = await auth();
 
-  // If not authenticated, redirect to login
+  // If not authenticated, show loading screen with logo
   if (!session || !session.user) {
-    redirect("/login");
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Image
+          alt="Logo"
+          src={"/dark-logo.png"}
+          width={300}
+          height={300}
+          className="animate-pulse"
+        />
+      </div>
+    );
   }
 
   // Redirect based on user role

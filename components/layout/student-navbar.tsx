@@ -98,18 +98,17 @@ export function StudentNavbar({ user }: StudentNavbarProps) {
             <NavigationMenuList>
               {mainNavItems.map((item) => (
                 <NavigationMenuItem key={item.href}>
-                  <Link href={item.href} passHref>
-                    <NavigationMenuLink
-                      className={cn(
-                        "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
-                        pathname === item.href
-                          ? "bg-accent text-accent-foreground"
-                          : ""
-                      )}
-                    >
-                      {item.icon}
-                      <span className="ml-2">{item.title}</span>
-                    </NavigationMenuLink>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
+                      pathname === item.href
+                        ? "bg-accent text-accent-foreground"
+                        : ""
+                    )}
+                  >
+                    {item.icon}
+                    <span className="ml-2">{item.title}</span>
                   </Link>
                 </NavigationMenuItem>
               ))}
@@ -197,12 +196,7 @@ export function StudentNavbar({ user }: StudentNavbarProps) {
                   Perfil
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/settings">
-                  <GraduationCap className="mr-2 size-4" />
-                  Calificaciones
-                </Link>
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => signOut({ callbackUrl: "/login" })}

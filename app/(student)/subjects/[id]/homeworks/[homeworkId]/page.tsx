@@ -384,7 +384,7 @@ export default async function HomeworkDetailPage({
                 <SubmitHomeworkForm
                   studentId={student.id}
                   subjectId={subject.id}
-                  homework={homework}
+                  homework={homework as any}
                 />
               )}
             </Card>
